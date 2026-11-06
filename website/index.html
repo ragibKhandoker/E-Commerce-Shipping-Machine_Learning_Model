@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce Delivery Prediction · ML Project</title>
+  <meta name="description" content="Predicting on-time delivery of e-commerce shipments with Logistic Regression, KNN, Decision Tree, Neural Network and K-Means — CSE422 Artificial Intelligence project." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ===== NAV ===== -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="#top" class="brand">📦 <span>ShipPredict</span></a>
+      <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+      <nav class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#dataset">Dataset</a>
+        <a href="#eda">EDA</a>
+        <a href="#method">Method</a>
+        <a href="#models">Models</a>
+        <a href="#results">Results</a>
+        <a href="#clustering">Clustering</a>
+        <a href="#downloads">Downloads</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="top">
+    <div class="container hero-inner">
+      <p class="eyebrow">CSE422 · Artificial Intelligence · Machine Learning Project</p>
+      <h1>E-Commerce Shipping<br /><span class="grad">Delivery Prediction</span></h1>
+      <p class="lead">
+        Can we tell, before a parcel leaves the warehouse, whether it will reach the customer on time?
+        This project analyses <strong>10,999 shipments</strong> and compares four supervised models plus
+        K-Means clustering to answer that question.
+      </p>
+      <div class="hero-cta">
+        <a href="#results" class="btn btn-primary">See the results</a>
+        <a href="#downloads" class="btn btn-ghost">Download dataset &amp; notebook</a>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="stat-num" data-count="10999">10,999</span><span class="stat-label">Shipments</span></div>
+        <div class="stat"><span class="stat-num" data-count="11">11</span><span class="stat-label">Input features</span></div>
+        <div class="stat"><span class="stat-num">4 + 1</span><span class="stat-label">Supervised + unsupervised models</span></div>
+        <div class="stat"><span class="stat-num">67.4%</span><span class="stat-label">Best accuracy (Decision Tree)</span></div>
+        <div class="stat"><span class="stat-num">0.741</span><span class="stat-label">Best ROC-AUC (Logistic Reg.)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- ===== OVERVIEW ===== -->
+    <section id="overview" class="section">
+      <div class="container">
+        <h2 class="section-title"><span>01</span> Project Overview</h2>
+        <div class="grid-2">
+          <div>
+            <h3>Problem statement</h3>
+            <p>
+              Timely delivery is one of the biggest drivers of customer satisfaction in e-commerce. Late parcels
+              mean unhappy customers, extra customer-care calls and higher operational costs.
+            </p>
+            <p>
+              This project frames the problem as a <strong>binary classification</strong> task: given details about
+              a shipment, its product and its customer, predict the value of <code>Reached.on.Time_Y.N</code>.
+            </p>
+            <ul class="check">
+              <li>Predict on-time delivery of shipments</li>
+              <li>Compare multiple machine learning models</li>
+              <li>Evaluate with metrics suited to an imbalanced target</li>
+              <li>Explore hidden structure with unsupervised learning</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>At a glance</h3>
+            <dl class="kv">
+              <dt>Task</dt><dd>Binary classification</dd>
+              <dt>Target</dt><dd><code>Reached.on.Time_Y.N</code></dd>
+              <dt>Samples</dt><dd>10,999 rows × 12 columns</dd>
+              <dt>Split</dt><dd>70% train (7,699) / 30% test (3,300), stratified</dd>
+              <dt>Supervised</dt><dd>Logistic Regression, KNN, Decision Tree, Neural Network (MLP)</dd>
+              <dt>Unsupervised</dt><dd>K-Means + PCA visualisation</dd>
+              <dt>Stack</dt><dd>Python · pandas · NumPy · scikit-learn · Matplotlib · Seaborn · Jupyter</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DATASET ===== -->
+    <section id="dataset" class="section alt">
+      <div class="container">
+        <h2 class="section-title"><span>02</span> Dataset</h2>
+        <p class="section-sub">
+          <strong>E-commerce Shipping Dataset</strong> — 10,999 shipments, no missing values.
+          4 categorical and 7 numerical input features plus the binary target.
+        </p>
+
+        <div class="table-wrap">
+          <table class="feature-table">
+            <thead>
+              <tr><th>Feature</th><th>Type</th><th>Description</th><th>Range / Values</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>ID</code></td><td><span class="tag num">numeric</span></td><td>Customer / row identifier</td><td>1 – 10,999</td></tr>
+              <tr><td><code>Warehouse_block</code></td><td><span class="tag cat">categorical</span></td><td>Warehouse block the product was shipped from</td><td>A, B, C, D, F</td></tr>
+              <tr><td><code>Mode_of_Shipment</code></td><td><span class="tag cat">categorical</span></td><td>How the product was shipped</td><td>Ship, Flight, Road</td></tr>
+              <tr><td><code>Customer_care_calls</code></td><td><span class="tag num">numeric</span></td><td>Number of calls made about the shipment</td><td>2 – 7 (mean 4.1)</td></tr>
+              <tr><td><code>Customer_rating</code></td><td><span class="tag num">numeric</span></td><td>Customer rating of the company</td><td>1 – 5 (mean 3.0)</td></tr>
+              <tr><td><code>Cost_of_the_Product</code></td><td><span class="tag num">numeric</span></td><td>Product cost in US dollars</td><td>96 – 310 (mean 210)</td></tr>
+              <tr><td><code>Prior_purchases</code></td><td><span class="tag num">numeric</span></td><td>Number of earlier purchases</td><td>2 – 10 (mean 3.6)</td></tr>
+              <tr><td><code>Product_importance</code></td><td><span class="tag cat">categorical</span></td><td>Importance category of the product</td><td>low, medium, high</td></tr>
+              <tr><td><code>Gender</code></td><td><span class="tag cat">categorical</span></td><td>Customer gender</td><td>F, M</td></tr>
+              <tr><td><code>Discount_offered</code></td><td><span class="tag num">numeric</span></td><td>Discount on the product (%)</td><td>1 – 65 (median 7)</td></tr>
+              <tr><td><code>Weight_in_gms</code></td><td><span class="tag num">numeric</span></td><td>Product weight in grams</td><td>1,001 – 7,846 (mean 3,634)</td></tr>
+              <tr class="target-row"><td><code>Reached.on.Time_Y.N</code></td><td><span class="tag tgt">target</span></td><td>Delivery outcome</td><td>1 = reached on time · 0 = not on time</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid-3 mini-cards">
+          <div class="card mini"><span class="mini-num">6,563</span><span>Class 1 — on time (59.7%)</span></div>
+          <div class="card mini"><span class="mini-num">4,436</span><span>Class 0 — not on time (40.3%)</span></div>
+          <div class="card mini"><span class="mini-num">0</span><span>Missing values in any column</span></div>
+        </div>
+
+        <h3 class="mt">Breakdown by category <small>(share of shipments with target = 1)</small></h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4>Mode of shipment</h4>
+            <div class="bars" data-bars='[["Ship",7462,0.598],["Flight",1777,0.602],["Road",1760,0.588]]'></div>
+          </div>
+          <div class="card">
+            <h4>Product importance</h4>
+            <div class="bars" data-bars='[["low",5297,0.593],["medium",4754,0.590],["high",948,0.650]]'></div>
+          </div>
+          <div class="card">
+            <h4>Discount offered</h4>
+            <div class="bars" data-bars='[["1–10%",8352,0.469],["11–20%",496,1.0],["21–40%",911,1.0],["41–65%",1240,1.0]]'></div>
+          </div>
+          <div class="card">
+            <h4>Warehouse block</h4>
+            <div class="bars" data-bars='[["A",1833,0.586],["B",1833,0.602],["C",1833,0.597],["D",1834,0.598],["F",3666,0.598]]'></div>
+          </div>
+          <div class="card">
+            <h4>Customer care calls</h4>
+            <div class="bars" data-bars='[["2",638,0.652],["3",3217,0.625],["4",3557,0.598],["5",2328,0.584],["6",1013,0.516],["7",246,0.516]]'></div>
+          </div>
+          <div class="card">
+            <h4>Gender</h4>
+            <div class="bars" data-bars='[["F",5545,0.594],["M",5454,0.599]]'></div>
+          </div>
+        </div>
+
+        <!-- Interactive explorer -->
+        <h3 class="mt">Explore the raw data</h3>
+        <div class="explorer card">
+          <div class="explorer-controls">
+            <input type="search" id="search" placeholder="Search any value… e.g. Flight, high, F" />
+            <select id="filter-target">
+              <option value="">All targets</option>
+              <option value="1">Target = 1 (on time)</option>
+              <option value="0">Target = 0 (not on time)</option>
+            </select>
+            <span id="row-count" class="muted">Loading…</span>
+          </div>
+          <div class="table-wrap scroll">
+            <table id="data-table" class="data-table"><thead></thead><tbody></tbody></table>
+          </div>
+          <div class="pager">
+            <button id="prev" class="btn btn-small">← Prev</button>
+            <span id="page-info" class="muted"></span>
+            <button id="next" class="btn btn-small">Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EDA ===== -->
+    <section id="eda" class="section">
+      <div class="container">
+        <h2 class="section-title"><span>03</span> Exploratory Data Analysis</h2>
+        <p class="section-sub">Charts generated in the project notebook. Click any chart to enlarge.</p>
+
+        <div class="gallery">
+          <figure><img src="assets/img/correlation-heatmap.png" alt="Correlation heatmap" loading="lazy" /><figcaption>Correlation heatmap of numerical features</figcaption></figure>
+          <figure><img src="assets/img/class-distribution.png" alt="Class distribution" loading="lazy" /><figcaption>Class distribution of the target</figcaption></figure>
+          <figure><img src="assets/img/weight-distribution.png" alt="Weight distribution" loading="lazy" /><figcaption>Distribution of shipment weight</figcaption></figure>
+          <figure><img src="assets/img/weight-vs-ontime.png" alt="Weight vs on-time" loading="lazy" /><figcaption>Shipment weight vs on-time delivery</figcaption></figure>
+          <figure><img src="assets/img/cost-vs-ontime.png" alt="Cost vs on-time" loading="lazy" /><figcaption>Product cost vs on-time delivery</figcaption></figure>
+          <figure><img src="assets/img/mode-vs-ontime.png" alt="Mode vs on-time" loading="lazy" /><figcaption>Mode of shipment vs on-time delivery</figcaption></figure>
+          <figure><img src="assets/img/warehouse-vs-ontime.png" alt="Warehouse vs on-time" loading="lazy" /><figcaption>Warehouse block vs on-time delivery</figcaption></figure>
+        </div>
+
+        <div class="insights">
+          <h3>Key insights</h3>
+          <div class="grid-2">
+            <div class="insight"><span class="ico">💸</span><div><strong>Discount is the strongest signal.</strong> Every shipment with a discount above 10% has target = 1; below that only 46.9% do. <code>Discount_offered</code> correlates +0.40 with the target.</div></div>
+            <div class="insight"><span class="ico">⚖️</span><div><strong>Weight matters.</strong> <code>Weight_in_gms</code> correlates −0.27 with the target; the two classes have clearly different weight distributions.</div></div>
+            <div class="insight"><span class="ico">📞</span><div><strong>More calls, fewer class-1 outcomes.</strong> The share of target = 1 falls from 65% (2 calls) to 52% (6–7 calls).</div></div>
+            <div class="insight"><span class="ico">🚢</span><div><strong>Mode, warehouse and gender barely matter.</strong> All stay within about 1–2 points of the 59.7% overall rate. Ship carries 68% of all shipments.</div></div>
+            <div class="insight"><span class="ico">⭐</span><div><strong>High-importance products</strong> have a higher class-1 share (65%) than low/medium (≈59%).</div></div>
+            <div class="insight"><span class="ico">📊</span><div><strong>Moderate imbalance</strong> (≈60/40), so accuracy alone is misleading. Precision, recall, F1 and ROC-AUC are reported too.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== METHODOLOGY ===== -->
+    <section id="method" class="section alt">
+      <div class="container">
+        <h2 class="section-title"><span>04</span> Methodology</h2>
+        <ol class="pipeline">
+          <li><span class="step">1</span><h4>Load &amp; inspect</h4><p>Load the CSV with pandas; check shape (10,999 × 12), dtypes and feature types.</p></li>
+          <li><span class="step">2</span><h4>EDA</h4><p>Correlation heatmap, class balance, distributions, box plots and count plots.</p></li>
+          <li><span class="step">3</span><h4>Cleaning</h4><p>Null check: 0 missing values in every column.</p></li>
+          <li><span class="step">4</span><h4>Encoding</h4><p><code>LabelEncoder</code> on Warehouse_block, Mode_of_Shipment, Product_importance and Gender.</p></li>
+          <li><span class="step">5</span><h4>Scaling</h4><p><code>StandardScaler</code> on all 11 input features.</p></li>
+          <li><span class="step">6</span><h4>Split</h4><p><code>train_test_split</code>: 70/30, <code>stratify=y</code>, <code>random_state=42</code>.</p></li>
+          <li><span class="step">7</span><h4>Train &amp; evaluate</h4><p>4 classifiers; accuracy, precision, recall, F1, confusion matrix, ROC-AUC.</p></li>
+          <li><span class="step">8</span><h4>Cluster</h4><p>K-Means (elbow method, k = 2) visualised with 2-component PCA.</p></li>
+        </ol>
+
+        <details class="code-block">
+          <summary>Show core training code</summary>
+<pre><code>X = df_encoded.drop('Reached.on.Time_Y.N', axis=1)
+y = df_encoded['Reached.on.Time_Y.N']
+X_scaled = StandardScaler().fit_transform(X)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.30, random_state=42, stratify=y)
+
+models = {
+  "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
+  "KNN":                 KNeighborsClassifier(n_neighbors=5),
+  "Decision Tree":       DecisionTreeClassifier(criterion='gini', max_depth=10, random_state=42),
+  "Neural Network":      MLPClassifier(hidden_layer_sizes=(64, 32), activation='relu',
+                                       solver='adam', max_iter=300, random_state=42),
+}</code></pre>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===== MODELS ===== -->
+    <section id="models" class="section">
+      <div class="container">
+        <h2 class="section-title"><span>05</span> Model-by-Model Report</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="lr" role="tab">Logistic Regression</button>
+          <button class="tab" data-tab="knn" role="tab">KNN</button>
+          <button class="tab" data-tab="dt" role="tab">Decision Tree</button>
+          <button class="tab" data-tab="nn" role="tab">Neural Network</button>
+        </div>
+
+        <!-- LR -->
+        <div class="tab-panel active" id="tab-lr">
+          <div class="model-head">
+            <p><code>LogisticRegression(max_iter=1000, random_state=42)</code></p>
+            <div class="pills"><span class="pill">Accuracy <b>66.21%</b></span><span class="pill best">ROC-AUC <b>0.741</b></span><span class="pill">Precision <b>0.735</b></span><span class="pill">Recall <b>0.678</b></span></div>
+          </div>
+          <div class="grid-3 model-grid">
+            <div class="card report">
+              <h4>Classification report</h4>
+              <table class="mini-table"><thead><tr><th></th><th>Prec.</th><th>Recall</th><th>F1</th><th>Support</th></tr></thead>
+                <tbody><tr><td>0</td><td>0.57</td><td>0.64</td><td>0.60</td><td>1331</td></tr><tr><td>1</td><td>0.74</td><td>0.68</td><td>0.71</td><td>1969</td></tr><tr class="sep"><td>macro</td><td>0.65</td><td>0.66</td><td>0.65</td><td>3300</td></tr><tr><td>weighted</td><td>0.67</td><td>0.66</td><td>0.66</td><td>3300</td></tr></tbody></table>
+            </div>
+            <figure><img src="assets/img/cm-logreg.png" alt="Confusion matrix Logistic Regression" loading="lazy" /><figcaption>Confusion matrix</figcaption></figure>
+            <figure><img src="assets/img/roc-logreg.png" alt="ROC Logistic Regression" loading="lazy" /><figcaption>ROC curve</figcaption></figure>
+          </div>
+        </div>
+
+        <!-- KNN -->
+        <div class="tab-panel" id="tab-knn">
+          <div class="model-head">
+            <p><code>KNeighborsClassifier(n_neighbors=5)</code></p>
+            <div class="pills"><span class="pill">Accuracy <b>65.88%</b></span><span class="pill">ROC-AUC <b>0.731</b></span><span class="pill">Precision <b>0.728</b></span><span class="pill best">Recall <b>0.684</b></span></div>
+          </div>
+          <div class="grid-3 model-grid">
+            <div class="card report">
+              <h4>Classification report</h4>
+              <table class="mini-table"><thead><tr><th></th><th>Prec.</th><th>Recall</th><th>F1</th><th>Support</th></tr></thead>
+                <tbody><tr><td>0</td><td>0.57</td><td>0.62</td><td>0.59</td><td>1331</td></tr><tr><td>1</td><td>0.73</td><td>0.68</td><td>0.71</td><td>1969</td></tr><tr class="sep"><td>macro</td><td>0.65</td><td>0.65</td><td>0.65</td><td>3300</td></tr><tr><td>weighted</td><td>0.66</td><td>0.66</td><td>0.66</td><td>3300</td></tr></tbody></table>
+            </div>
+            <figure><img src="assets/img/cm-knn.png" alt="Confusion matrix KNN" loading="lazy" /><figcaption>Confusion matrix</figcaption></figure>
+            <figure><img src="assets/img/roc-knn.png" alt="ROC KNN" loading="lazy" /><figcaption>ROC curve</figcaption></figure>
+          </div>
+        </div>
+
+        <!-- DT -->
+        <div class="tab-panel" id="tab-dt">
+          <div class="model-head">
+            <p><code>DecisionTreeClassifier(criterion='gini', max_depth=10, random_state=42)</code></p>
+            <div class="pills"><span class="pill best">Accuracy <b>67.42%</b></span><span class="pill">ROC-AUC <b>0.732</b></span><span class="pill best">Precision <b>0.839</b></span><span class="pill">Recall <b>0.562</b></span></div>
+          </div>
+          <div class="grid-3 model-grid">
+            <div class="card report">
+              <h4>Classification report</h4>
+              <table class="mini-table"><thead><tr><th></th><th>Prec.</th><th>Recall</th><th>F1</th><th>Support</th></tr></thead>
+                <tbody><tr><td>0</td><td>0.56</td><td>0.84</td><td>0.68</td><td>1331</td></tr><tr><td>1</td><td>0.84</td><td>0.56</td><td>0.67</td><td>1969</td></tr><tr class="sep"><td>macro</td><td>0.70</td><td>0.70</td><td>0.67</td><td>3300</td></tr><tr><td>weighted</td><td>0.73</td><td>0.67</td><td>0.67</td><td>3300</td></tr></tbody></table>
+            </div>
+            <figure><img src="assets/img/cm-dt.png" alt="Confusion matrix Decision Tree" loading="lazy" /><figcaption>Confusion matrix</figcaption></figure>
+            <figure><img src="assets/img/roc-dt.png" alt="ROC Decision Tree" loading="lazy" /><figcaption>ROC curve</figcaption></figure>
+          </div>
+        </div>
+
+        <!-- NN -->
+        <div class="tab-panel" id="tab-nn">
+          <div class="model-head">
+            <p><code>MLPClassifier(hidden_layer_sizes=(64, 32), activation='relu', solver='adam', max_iter=300)</code></p>
+            <div class="pills"><span class="pill">Accuracy <b>65.48%</b></span><span class="pill">ROC-AUC <b>0.737</b></span><span class="pill">Precision <b>0.739</b></span><span class="pill">Recall <b>0.652</b></span></div>
+          </div>
+          <div class="grid-3 model-grid">
+            <div class="card report">
+              <h4>Classification report</h4>
+              <table class="mini-table"><thead><tr><th></th><th>Prec.</th><th>Recall</th><th>F1</th><th>Support</th></tr></thead>
+                <tbody><tr><td>0</td><td>0.56</td><td>0.66</td><td>0.61</td><td>1331</td></tr><tr><td>1</td><td>0.74</td><td>0.65</td><td>0.69</td><td>1969</td></tr><tr class="sep"><td>macro</td><td>0.65</td><td>0.66</td><td>0.65</td><td>3300</td></tr><tr><td>weighted</td><td>0.67</td><td>0.65</td><td>0.66</td><td>3300</td></tr></tbody></table>
+              <p class="note">Note: the optimiser hit the 300-iteration limit before fully converging (ConvergenceWarning).</p>
+            </div>
+            <figure><img src="assets/img/cm-nn.png" alt="Confusion matrix Neural Network" loading="lazy" /><figcaption>Confusion matrix</figcaption></figure>
+            <figure><img src="assets/img/roc-nn.png" alt="ROC Neural Network" loading="lazy" /><figcaption>ROC curve</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RESULTS ===== -->
+    <section id="results" class="section alt">
+      <div class="container">
+        <h2 class="section-title"><span>06</span> Results &amp; Model Comparison</h2>
+        <p class="section-sub">Evaluated on the held-out test set (3,300 shipments). Best value in each column is highlighted.</p>
+
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead><tr><th>Model</th><th>Accuracy</th><th>Precision (1)</th><th>Recall (1)</th><th>F1 (1)</th><th>Macro F1</th><th>ROC-AUC</th></tr></thead>
+            <tbody>
+              <tr><td>Logistic Regression</td><td>0.6621</td><td>0.7354</td><td>0.6775</td><td class="hi">0.71</td><td>0.65</td><td class="hi">0.7411</td></tr>
+              <tr><td>K-Nearest Neighbors</td><td>0.6588</td><td>0.7277</td><td class="hi">0.6841</td><td class="hi">0.71</td><td>0.65</td><td>0.7306</td></tr>
+              <tr><td>Decision Tree</td><td class="hi">0.6742</td><td class="hi">0.8392</td><td>0.5617</td><td>0.67</td><td class="hi">0.67</td><td>0.7324</td></tr>
+              <tr><td>Neural Network (MLP)</td><td>0.6548</td><td>0.7388</td><td>0.6521</td><td>0.69</td><td>0.65</td><td>0.7370</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="metric-chart card">
+          <div class="metric-switch">
+            <button class="chip active" data-metric="acc">Accuracy</button>
+            <button class="chip" data-metric="auc">ROC-AUC</button>
+            <button class="chip" data-metric="prec">Precision</button>
+            <button class="chip" data-metric="rec">Recall</button>
+          </div>
+          <div id="metric-bars" class="hbars"></div>
+        </div>
+
+        <div class="gallery three">
+          <figure><img src="assets/img/accuracy-comparison.png" alt="Accuracy comparison" loading="lazy" /><figcaption>Accuracy comparison</figcaption></figure>
+          <figure><img src="assets/img/precision-recall.png" alt="Precision and recall" loading="lazy" /><figcaption>Precision &amp; recall comparison</figcaption></figure>
+          <figure><img src="assets/img/roc-comparison.png" alt="ROC comparison" loading="lazy" /><figcaption>ROC curves of all models</figcaption></figure>
+        </div>
+
+        <div class="grid-3">
+          <div class="card verdict"><span class="ico">🏆</span><h4>Highest accuracy &amp; precision</h4><p><strong>Decision Tree</strong>: 67.4% accuracy and 0.84 precision. It is very conservative: it predicts class 1 only when it is confident, so recall drops to 0.56.</p></div>
+          <div class="card verdict"><span class="ico">📈</span><h4>Best ranking ability</h4><p><strong>Logistic Regression</strong> has the highest ROC-AUC (0.741). It ranks shipments best and is the simplest, most interpretable model.</p></div>
+          <div class="card verdict"><span class="ico">⚖️</span><h4>Balanced trade-off</h4><p><strong>Neural Network</strong> and <strong>KNN</strong> keep precision and recall close together (≈0.73 / 0.65–0.68), with AUCs of 0.737 and 0.731.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CLUSTERING ===== -->
+    <section id="clustering" class="section">
+      <div class="container">
+        <h2 class="section-title"><span>07</span> Unsupervised Learning: K-Means</h2>
+        <div class="grid-2 align-center">
+          <div>
+            <p>
+              K-Means was run on the same scaled feature matrix for <em>k</em> = 1…10. The elbow in the
+              sum-of-squares curve was used to select <strong>k = 2</strong> clusters (<code>n_init=10</code>,
+              <code>random_state=42</code>).
+            </p>
+            <p>
+              To visualise the 11-dimensional data, it was projected to two principal components with
+              <strong>PCA</strong> and coloured by cluster. The clusters show groups of shipments with similar
+              behaviour, independent of the delivery label. This is useful for exploration and segmentation.
+            </p>
+          </div>
+          <div class="gallery two">
+            <figure><img src="assets/img/kmeans-elbow.png" alt="Elbow method" loading="lazy" /><figcaption>Elbow method for optimal K</figcaption></figure>
+            <figure><img src="assets/img/kmeans-pca.png" alt="K-Means PCA" loading="lazy" /><figcaption>K-Means clusters (PCA projection)</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONCLUSION ===== -->
+    <section id="conclusion" class="section alt">
+      <div class="container">
+        <h2 class="section-title"><span>08</span> Conclusion</h2>
+        <div class="grid-2">
+          <div>
+            <ul class="check">
+              <li>All four supervised models land in a narrow band: <strong>65–67% accuracy</strong> and <strong>0.73–0.74 ROC-AUC</strong>.</li>
+              <li>Because the classes are imbalanced (≈60/40), accuracy alone doesn't separate the models. Precision, recall and AUC tell different stories.</li>
+              <li><strong>Discount offered</strong>, <strong>product weight</strong> and <strong>customer care calls</strong> are the most informative features.</li>
+              <li>K-Means with PCA gives a complementary, label-free view of shipment segments.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Possible next steps</h3>
+            <ul class="arrow">
+              <li>Drop the <code>ID</code> column (an identifier, not a real shipment attribute)</li>
+              <li>Use one-hot encoding for nominal categories</li>
+              <li>Try ensemble methods (Random Forest, Gradient Boosting, XGBoost)</li>
+              <li>Tune hyperparameters with cross-validated grid search</li>
+              <li>Handle imbalance with class weights or SMOTE</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DOWNLOADS ===== -->
+    <section id="downloads" class="section">
+      <div class="container">
+        <h2 class="section-title"><span>09</span> Downloads &amp; Source</h2>
+        <div class="grid-3">
+          <a class="card dl" href="data/ecommerce-shipping-dataset.csv" download>
+            <span class="ico">📄</span><h4>Dataset (CSV)</h4><p>E-commerce Shipping Dataset · 10,999 rows · ~1 MB</p>
+          </a>
+          <a class="card dl" href="data/ecommerce_delivery_prediction.ipynb" download>
+            <span class="ico">📓</span><h4>Jupyter Notebook</h4><p>Full analysis with EDA, models and all outputs</p>
+          </a>
+          <a class="card dl" href="https://github.com/ragibKhandoker/E-Commerce-Shipping-Machine_Learning_Model" target="_blank" rel="noopener">
+            <span class="ico">🐙</span><h4>GitHub Repository</h4><p>Source code and README</p>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>Khandoker Md. Ragib Ahsan</strong><br />
+        <span class="muted">CSE422: Artificial Intelligence · Group 06 (24141162, 22301202)</span>
+      </div>
+      <div class="muted">Built with HTML, CSS &amp; vanilla JavaScript · For academic purposes</div>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lb-close" aria-label="Close">×</button>
+    <img alt="" />
+    <p class="lb-caption"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
