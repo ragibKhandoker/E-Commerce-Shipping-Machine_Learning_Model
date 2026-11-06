@@ -305,7 +305,6 @@ This project was built as a team for **CSE422: Artificial Intelligence**, **Grou
       </a><br/>
       🆔 Student ID: <code>24141162</code><br/><br/>
       <a href="https://github.com/pur-no"><img src="https://img.shields.io/badge/GitHub-pur--no-181717?style=flat-square&logo=github" alt="GitHub" /></a>
-      <a href="https://www.linkedin.com/in/abrarahsan007/"><img src="https://img.shields.io/badge/LinkedIn-abrarahsan007-0A66C2?style=flat-square&logo=linkedin" alt="LinkedIn" /></a>
     </td>
   </tr>
 </table>
