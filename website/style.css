@@ -52,6 +52,7 @@ strong { color: #fff; }
 .nav-links { display: flex; gap: 0.25rem; }
 .nav-links a { color: var(--muted); font-size: 0.9rem; font-weight: 500; padding: 0.4rem 0.7rem; border-radius: 8px; transition: 0.2s; }
 .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--card); }
+.nav-links a.nav-repo { color: var(--primary); border: 1px solid var(--primary); }
 .nav-toggle { display: none; background: none; border: 0; color: var(--text); font-size: 1.5rem; cursor: pointer; }
 
 /* ===== HERO ===== */
