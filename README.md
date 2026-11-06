@@ -287,7 +287,7 @@ npx vercel deploy --prod
 ## 👤 Author
 
 **Khandoker Md. Ragib Ahsan**
-CSE422: Artificial Intelligence · Group 06
+CSE422: Artificial Intelligence · Group 08
 
 [![GitHub](https://img.shields.io/badge/GitHub-ragibKhandoker-181717?style=flat-square&logo=github)](https://github.com/ragibKhandoker)
 [![Website](https://img.shields.io/badge/Project-Live_Site-6c8cff?style=flat-square)](https://ecommerce-delivery-prediction.vercel.app)
