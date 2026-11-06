@@ -34,7 +34,7 @@
 - [Conclusion](#-conclusion)
 - [Project Structure](#-project-structure)
 - [Run Locally](#-run-locally)
-- [Author](#-author)
+- [Team & Collaboration](#-team--collaboration)
 
 ---
 
@@ -284,12 +284,39 @@ npx vercel deploy --prod
 
 ---
 
-## 👤 Author
+## 👥 Team & Collaboration
 
-**Khandoker Md. Ragib Ahsan**
-CSE422: Artificial Intelligence · Group 08
+This project was built as a team for **CSE422: Artificial Intelligence**, **Group 08**.
 
-[![GitHub](https://img.shields.io/badge/GitHub-ragibKhandoker-181717?style=flat-square&logo=github)](https://github.com/ragibKhandoker)
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://github.com/ragibKhandoker">
+        <img src="https://github.com/ragibKhandoker.png" width="100" style="border-radius:50%" alt="Khandoker Md. Ragib Ahsan" /><br/>
+        <b>Khandoker Md. Ragib Ahsan</b>
+      </a><br/>
+      🆔 Student ID: <code>22301202</code><br/><br/>
+      <a href="https://github.com/ragibKhandoker"><img src="https://img.shields.io/badge/GitHub-ragibKhandoker-181717?style=flat-square&logo=github" alt="GitHub" /></a>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://github.com/pur-no">
+        <img src="https://github.com/pur-no.png" width="100" style="border-radius:50%" alt="Abrar Ahsan Purno" /><br/>
+        <b>Abrar Ahsan Purno</b>
+      </a><br/>
+      🆔 Student ID: <code>24141162</code><br/><br/>
+      <a href="https://github.com/pur-no"><img src="https://img.shields.io/badge/GitHub-pur--no-181717?style=flat-square&logo=github" alt="GitHub" /></a>
+      <a href="https://www.linkedin.com/in/abrarahsan007/"><img src="https://img.shields.io/badge/LinkedIn-abrarahsan007-0A66C2?style=flat-square&logo=linkedin" alt="LinkedIn" /></a>
+    </td>
+  </tr>
+</table>
+
+### 🤝 Collaborator's repository
+The project is also available in my teammate's repository:
+
+[![Collaborator Repo](https://img.shields.io/badge/GitHub-pur--no%2Fecommerce--delivery--prediction-181717?style=for-the-badge&logo=github)](https://github.com/pur-no/ecommerce-delivery-prediction)
+
+🔗 **https://github.com/pur-no/ecommerce-delivery-prediction**
+
 [![Website](https://img.shields.io/badge/Project-Live_Site-6c8cff?style=flat-square)](https://ecommerce-delivery-prediction.vercel.app)
 
 ---
